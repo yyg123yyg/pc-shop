@@ -1,3 +1,4 @@
+// eslint-disable-next-line vue/experimental-script-setup-vars
 module.exports = {
   configureWebpack:{
     devServer: {
@@ -12,5 +13,6 @@ module.exports = {
         'views': '@/views'
       }
     }
-  }
+  },
+  // lintOnSave: false
 }

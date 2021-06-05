@@ -32,14 +32,16 @@
 </template>
 
 <script>
+    import {login} from "../network/login";
+
     export default {
         name: "Login",
         data() {
             return {
                 //登录表单的数据绑定对象
                 loginForm: {
-                    username: '',
-                    password: ''
+                    username: 'admin',
+                    password: '123456'
                 },
                 // 表单验证
                 loginFormRules: {
@@ -57,15 +59,33 @@
                 }
             }
         },
-        methods:{
+        methods: {
             //重置表单
-            resetLoginForm(){
+            resetLoginForm() {
                 // this.$refs.loginFormRef.resetFields()
                 this.$refs['loginFormRef'].resetFields()
             },
-            login(){
-                this.$refs['loginFormRef'].validate((valid)=>{
-                    console.log(valid)
+            login() {
+                this.$refs['loginFormRef'].validate((valid) => {
+                    // console.log(valid)
+
+                    if (!valid) return;
+                    login(this.loginForm).then(res => {
+                        console.log(res);
+                        if (res.meta.status !== 200) {
+                            return this.$message.error('登录失败');
+                        }
+                        //不要加return
+                        this.$message({
+                            message: '恭喜你，登录成功',
+                            type: 'success'
+                        });
+                        // eslint-disable-next-line no-unreachable
+                        sessionStorage.setItem("token", res.data.token);
+                        setTimeout(() => {
+                            this.$router.push('/home');
+                        }, 500)
+                    })
                 })
             }
         }
@@ -74,20 +94,36 @@
 
 <style lang="less" scoped>
     .login_container {
-        background-color: #2b4b6b;
+        /*background-color: #2b4b6b;*/
         width: 100%;
         height: 100%;
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
     }
 
     .login_box {
         width: 450px;
         height: 300px;
         background-color: #fff;
-        border-radius: 5px;
+        border-radius: 7px;
         position: absolute;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
+       background-color: rgba(0,0,0,.2);
 
         .avatar_box {
             width: 130px;
