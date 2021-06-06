@@ -4,10 +4,12 @@ import router from './router'
 import store from './store'
 import 'assets/font/iconfont.css'
 //element
-import ElementUI from 'element-ui';
+import ElementUI, {Message, MessageBox} from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 
+Vue.prototype.$confirm=MessageBox.confirm;
+Vue.prototype.$message=Message;
 Vue.config.productionTip = false
 
 new Vue({

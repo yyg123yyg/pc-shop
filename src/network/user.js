@@ -35,3 +35,32 @@ export function getAddUser({username, password, email, mobile}) {
 
     })
 }
+
+//修改用户请求
+export function editUser(id) {
+    return request({
+        url: `users/${id}`,
+
+    })
+}
+
+// 编辑用户提交
+export function editUserInfo({id, email, mobile}) {
+    return request({
+        url: `users/${id}`,
+        method: "put",
+        data: {
+            email,
+            mobile
+        }
+
+    })
+}
+
+// 删除单个用户
+export function deleteUser(id) {
+    return request({
+        url: `users/${id}`,
+        method:'delete'
+    })
+}

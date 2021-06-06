@@ -96,7 +96,7 @@
                     //清空token,退出
                     this.$message({
                         type: 'success',
-                        message: '删除成功!'
+                        message: '退出成功!'
                     });
                     window.sessionStorage.clear();
                     this.$router.push('/login')
@@ -104,7 +104,7 @@
                 }).catch(() => {
                     this.$message({
                         type: 'info',
-                        message: '已取消删除'
+                        message: '已取消退出'
                     });
                 })
 
