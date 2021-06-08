@@ -64,3 +64,20 @@ export function deleteUser(id) {
         method:'delete'
     })
 }
+
+//获取所有角色的列表
+export function getRoleList() {
+    return request({
+        url:'/roles'
+    })
+}
+//分配用户角色
+export function roletouser(id,rid) {
+    return request({
+        url:`/users/${id}/role`,
+        method:'put',
+        data:{
+            rid
+        }
+    })
+}

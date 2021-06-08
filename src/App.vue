@@ -6,4 +6,7 @@
 
 <style lang="less" scoped>
     @import "assets/css/base.css";
+    #app{
+        min-width: 1366px;
+    }
 </style>

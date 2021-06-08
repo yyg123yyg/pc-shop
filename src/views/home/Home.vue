@@ -82,33 +82,25 @@
         },
         methods: {
             logout() {
-                new Promise((resolve, reject) => {
-                    this.$confirm('此操作将退出登录, 是否继续?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'warning'
-                    }).then(() => {
-                        resolve()
-                    }).catch(() => {
-                        reject()
-                    })
-                }).then(() => {
-                    //清空token,退出
-                    this.$message({
-                        type: 'success',
-                        message: '退出成功!'
-                    });
-                    window.sessionStorage.clear();
-                    this.$router.push('/login')
+                         this.$confirm('此操作将退出登录, 是否继续?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                             //清空token,退出
+                             this.$message({
+                                 type: 'success',
+                                 message: '退出成功!'
+                             });
+                             window.sessionStorage.clear();
+                             this.$router.push('/login')
 
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消退出'
-                    });
-                })
-
-
+                         }).catch(() => {
+                            this.$message({
+                                type: 'info',
+                                message: '已取消退出'
+                            });
+                        })
             },
             getMenuList() {
                 getMenuList().then(res => {
@@ -126,14 +118,14 @@
             // 保存链接的激活状态
             saveNavState(activePath) {
                 window.sessionStorage.setItem('activePath', activePath);
-                this.activePath=activePath
+                this.activePath = activePath
             }
         },
         created() {
             //获取所有的菜单
             this.getMenuList();
             //高亮效果显示
-            this.activePath=window.sessionStorage.getItem('activePath')
+            this.activePath = window.sessionStorage.getItem('activePath')
         }
     }
 </script>
