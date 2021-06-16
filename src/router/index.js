@@ -8,6 +8,8 @@ const Welcome = () => import("components/Welcome");
 const User = () => import("components/user/User");
 const Rights = () => import("components/power/Rights")
 const Roles = () => import("components/power/Roles")
+const Cate = () => import("components/goods/Cate")
+const Params = () => import("components/goods/Params")
 const routes = [
     {
         path: '/',
@@ -34,6 +36,12 @@ const routes = [
             }, {
                 path: '/roles',
                 component: Roles,
+            },{
+                path: '/categories',
+                component: Cate,
+            },{
+                path: '/params',
+                component: Params,
             },
 
         ]

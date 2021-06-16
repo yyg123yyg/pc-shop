@@ -118,7 +118,7 @@
             // 保存链接的激活状态
             saveNavState(activePath) {
                 window.sessionStorage.setItem('activePath', activePath);
-                this.activePath = activePath
+                // this.activePath = activePath
             }
         },
         created() {
