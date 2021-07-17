@@ -35,13 +35,40 @@
                     </el-button>
                     <!--  动态参数表格-->
                     <el-table :data="manyTableDate" border stripe>
-                        <el-table-column type="expand"></el-table-column>
+                        <el-table-column type="expand">
+                            <template v-slot="scope">
+                                <el-tag @close="handleClose(index,scope.row)"
+                                        v-for="(item,index) in scope.row.attr_vals" :key="index" closable
+                                >{{item}}
+                                </el-tag>
+                                <!--输入的文本框-->
+                                <el-input
+                                        class="input-new-tag"
+                                        v-if="scope.row.inputVisible"
+                                        v-model="scope.row.inputValue"
+                                        ref="saveTagInput"
+                                        size="small"
+                                        @keyup.enter.native="handleInputConfirm(scope.row)"
+                                        @blur="handleInputConfirm(scope.row)"
+                                ></el-input>
+                                <!--添加的按钮-->
+                                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+
+                                    New Tag
+                                </el-button>
+                            </template>
+                        </el-table-column>
                         <el-table-column type="index"></el-table-column>
                         <el-table-column label="参数名称" prop="attr_name"></el-table-column>
                         <el-table-column label="操作">
-                            <el-button size="mini" @click="showEditDialog" type="primary" icon="el-icon-edit">编辑
-                            </el-button>
-                            <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+                            <template v-slot="scope">
+                                <el-button size="mini" @click="showEditDialog(scope.row.attr_id)" type="primary"
+                                           icon="el-icon-edit">编辑
+                                </el-button>
+                                <el-button size="mini" @click='deleteParmas(scope.row.attr_id)' type="danger"
+                                           icon="el-icon-delete">删除
+                                </el-button>
+                            </template>
+
                         </el-table-column>
                     </el-table>
                 </el-tab-pane>
@@ -50,13 +77,38 @@
                     </el-button>
                     <!--  静态参数表格-->
                     <el-table :data="onlyTableDate" border stripe>
-                        <el-table-column type="expand"></el-table-column>
+                        <el-table-column type="expand">
+                            <template v-slot="scope">
+                                <el-tag @close="handleClose(index,scope.row)" v-for="(item,index) in scope.row.attr_vals" :key="index" closable
+                                >{{item}}
+                                </el-tag>
+                                <!--输入的文本框-->
+                                <el-input
+                                        class="input-new-tag"
+                                        v-if="scope.row.inputVisible"
+                                        v-model="scope.row.inputValue"
+                                        ref="saveTagInput"
+                                        size="small"
+                                        @keyup.enter.native="handleInputConfirm(scope.row)"
+                                        @blur="handleInputConfirm(scope.row)"
+                                ></el-input>
+                                <!--添加的按钮-->
+                                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+
+                                    New Tag
+                                </el-button>
+                            </template>
+                        </el-table-column>
                         <el-table-column type="index"></el-table-column>
                         <el-table-column label="属性名称" prop="attr_name"></el-table-column>
                         <el-table-column label="操作">
-                            <el-button @click="showEditDialog" size="mini" type="primary" icon="el-icon-edit">编辑
-                            </el-button>
-                            <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+                            <template v-slot="scope">
+                                <el-button @click="showEditDialog(scope.row.attr_id)" size="mini" type="primary"
+                                           icon="el-icon-edit">编辑
+                                </el-button>
+                                <el-button size="mini" @click='deleteParmas(scope.row.attr_id)' type="danger"
+                                           icon="el-icon-delete">删除
+                                </el-button>
+                            </template>
                         </el-table-column>
                     </el-table>
                 </el-tab-pane>
@@ -75,7 +127,6 @@
                     <el-input v-model="addForm.attr_name"></el-input>
                 </el-form-item>
             </el-form>
-
             <span slot="footer" class="dialog-footer">
                 <el-button @click="addDialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="addParmasbtn">确 定</el-button>
@@ -88,7 +139,7 @@
                 width="50%"
                 @close="editDialogClosed"
         >
-            <!-- 添加参数的对话框 -->
+            <!-- 修改参数的对话框 -->
             <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="100px">
                 <el-form-item :label="titleText" prop="attr_name">
                     <el-input v-model="editForm.attr_name"></el-input>
@@ -96,15 +147,21 @@
             </el-form>
 
             <span slot="footer" class="dialog-footer">
-                <el-button @click="editDialogVisible = false">取 消</el-button>
+
+                    <el-button @click="editDialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="editParmasbtn">确 定</el-button>
+
+
              </span>
         </el-dialog>
     </div>
 </template>
 
 <script>
-    import {getCateList, getCateAttributes, addParmas} from "network/parmas";
+    import {
+        getCateList, getCateAttributes, addParmas,
+        selectId, editInfo, deleteParmas, editInfo2
+    } from "network/parmas";
 
     export default {
         name: "Params",
@@ -128,7 +185,7 @@
                 onlyTableDate: [],
                 addDialogVisible: false,
                 addForm: {
-                    attr_name: ''
+                    // attr_name: ''
                 },
                 addFormRules: {
                     attr_name: [
@@ -137,11 +194,12 @@
                 },
                 editDialogVisible: false,
                 editForm: {},
-                editFormRules:{
+                editFormRules: {
                     attr_name: [
                         {required: true, message: '请输入参数名称', trigger: 'blur'},
                     ],
-                }
+                },
+
 
             }
         },
@@ -200,6 +258,7 @@
             //tab点击事件
             handleTabClick() {
                 this.getParamsDate()
+                // console.log(this.activeName)
                 // getCateAttributes(this.cateId,this.activeName).then(res=>{
                 //     if(res.meta.status!==200){
                 //         return this.$message.error('获取参数列表失败')
@@ -211,10 +270,11 @@
                 //证明选中的不是三级分类
                 if (this.selectCateKeys.length !== 3) {
                     this.selectCateKeys = [];
+                    this.manyTableDate = [];
+                    this.onlyTableDate = [];
                     return;
                 }
-                console.log(this.cateId)
-
+                // console.log(this.cateId)
                 //证明选中的是三级分类
                 // console.log(this.selectCateKeys)
                 //根据所选分类的id，和当前所处的面板获取对应的参数
@@ -222,11 +282,20 @@
                     if (res.meta.status !== 200) {
                         return this.$message.error('获取参数列表失败')
                     }
-                    console.log(res)
+                    console.log(res);
+                    res.data.forEach(item => {
+                        item.attr_vals = item.attr_vals ? item.attr_vals.split(" ") : []; //解决attr_val为空字符串时的问题
+                        //控制文本框的显示与隐藏
+                        item.inputVisible = false;
+                        // //文本框中输入的值
+                        item.inputValue = '';
+                    });
                     if (this.activeName === "many") {
                         this.manyTableDate = res.data
                     } else {
                         this.onlyTableDate = res.data
+                        // console.log(this.onlyTableDate)
+
                     }
                 })
             },
@@ -248,17 +317,97 @@
                 })
             },
             //点击按钮，展示修改的对话框
-            showEditDialog() {
-                this.editDialogVisible = true
+            showEditDialog(attr_id) {
+                //查询当前参数的信息
+
+                selectId(this.cateId, attr_id, this.activeName).then(res => {
+                    if (res.meta.status !== 200) {
+                        return this.$message.error('查询商品信息失败')
+                    }
+                    this.editForm = res.data;
+                })
+                this.editDialogVisible = true;
+
             },
             //重置修改表单
             editDialogClosed() {
-                this.$refs.editForm.resetFields()
+                this.$refs.editFormRef.resetFields()
             },
-            editParmasbtn(){
+            //更新数据
+            editParmasbtn() {
+                this.$refs.editFormRef.validate(valid => {
+                    if (!valid) return;
+                    editInfo(this.cateId, this.editForm.attr_id,
+                        this.editForm.attr_name, this.activeName).then(res => {
+                        if (res.meta.status !== 200) {
+                            return this.$message.error('数据更新失败')
+                        }
+                        this.$message.success('数据更新成功');
+                        this.getParamsDate();
+                        this.editDialogVisible = false;
 
+                    })
+                })
+            },
+            //删除数据
+            async deleteParmas(attr_id) {
+                const confirmRerult = await this.$confirm('此操作将永久删除该参数, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).catch(err => {
+                    return err
+                });
+                if (confirmRerult !== 'confirm') {
+                    return this.$message.info('已取消删除')
+                }
+                deleteParmas(this.cateId, attr_id).then(res => {
+                    if (res.meta.status !== 200) {
+                        this.$message.error('删除失败')
+                    }
+                    this.$message.success('删除成功')
+                    this.getParamsDate()
+                })
+            },
+            //文本框失去焦点或按下了enter建时触发
+            handleInputConfirm(data) {
+                if (data.inputValue.trim().length === 0) {
+                    data.inputValue = '';
+                    data.inputVisible = false;
+                    return;
+                }
+                data.attr_vals.push(data.inputValue.trim());
+                data.inputValue = '';
+                data.inputVisible = false;
+                //发起请求，保存此数据
+                editInfo2(this.cateId, data.attr_id, data.attr_name,
+                    data.attr_sel, data.attr_vals.join(" ")).then(res => {
+                    if (res.meta.status !== 200) {
+                        this.$message.error('保存失败')
+                    }
+                    this.$message.success('保存成功')
+                })
+            },
+
+            showInput(data) {
+                data.inputVisible = true;
+                //让文本框自动获得焦点
+                //$nextTick 方法的作用，就是当页面上元素被重新渲染之后，才会执行回调函数中的代码
+                this.$nextTick(() => {
+                    this.$refs.saveTagInput.$refs.input.focus();
+                });
+            },
+            //删除对应的参数
+            handleClose(index, data) {
+                data.attr_vals.splice(index,1)
+                editInfo2(this.cateId, data.attr_id, data.attr_name,
+                    data.attr_sel, data.attr_vals.join(" ")).then(res => {
+                    if (res.meta.status !== 200) {
+                        this.$message.error('删除失败')
+                    }
+                    this.$message.success('删除成功')
+                })
             }
-
 
         },
         created() {
@@ -279,7 +428,15 @@
         box-shadow: 0 1px 1px rgba(0, 0, 0, .15);
     }
 
+    .el-tag {
+        margin: 10px;
+    }
+
     .cat_opt {
         margin: 15px 0;
+    }
+
+    .input-new-tag {
+        width: 120px;
     }
 </style>

@@ -5,6 +5,7 @@ module.exports = {
       port: 3000, // 端口
     },
     resolve:{
+      //别名
       alias:{
         'assets': '@/assets',
         'common': '@/components/common',
@@ -14,5 +15,5 @@ module.exports = {
       }
     }
   },
-  // lintOnSave: false
+
 }
